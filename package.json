@@ -1,6 +1,6 @@
 {
-  "name": "electron-react-boilerplate",
-  "description": "A foundation for scalable desktop apps",
+  "name": "filmtime",
+  "description": "A MovieNightᵀᴹ App",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
@@ -30,8 +30,8 @@
     ]
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "filmtime",
+    "appId": "ca.cul-de-sac.filmtime",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -95,14 +95,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "git+https://github.com/starlocke/mpc-filmtime.git"
   },
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "name": "Victor Yap",
+    "email": "sir.victor.yap@gmail.com",
+    "url": "https://blog.cul-de-sac.ca"
   },
   "contributors": [
+    {
+      "name": "Electron React Boilerplate Maintainers",
+      "email": "electronreactboilerplate@gmail.com",
+      "url": "https://electron-react-boilerplate.js.org"
+    },
     {
       "name": "Amila Welihinda",
       "email": "amilajack@gmail.com",
@@ -116,7 +121,7 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
+    "url": "https://github.com/starlocke/mpc-filmtime/issues"
   },
   "keywords": [
     "electron",
@@ -129,7 +134,7 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
+  "homepage": "https://github.com/starlocke/mpc-filmtime/issues",
   "jest": {
     "testURL": "http://localhost/",
     "testEnvironment": "jsdom",
