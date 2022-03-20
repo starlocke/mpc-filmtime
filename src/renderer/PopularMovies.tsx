@@ -11,7 +11,7 @@ export default function PopularMovies() {
   const [isLoading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [movies, setMovies] = useState();
+  const [movies, setMovies] = useState<MovieResult[] | undefined>(undefined);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -21,7 +21,7 @@ export default function PopularMovies() {
       .moviePopular(req)
       .then((res: PopularMoviesResponse) => {
         setMovies(res.results);
-        const total = parseInt(res.total_pages, 10);
+        const total = parseInt(`${res.total_pages}`, 10);
         setTotalPages(Math.max(1, Math.min(total, 500)));
         setLoading(false);
         console.log(res);
@@ -62,9 +62,7 @@ export default function PopularMovies() {
   return (
     <div className="PopularMovies">
       {form}
-      {movies.map((m: MovieResult) => (
-        <Movie key={m.id} movie={m} />
-      ))}
+      {movies && movies.map((m: MovieResult) => <Movie key={m.id} movie={m} />)}
     </div>
   );
 }

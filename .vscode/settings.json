@@ -20,5 +20,8 @@
     "package-lock.json": true,
     "*.{css,sass,scss}.d.ts": true
   },
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "editor.formatOnPaste": true
 }

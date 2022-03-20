@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { MovieDb } from 'moviedb-promise';
+import { PopularMoviesResponse } from 'moviedb-promise/dist/request-types';
 import './Home.css';
 import PopularMovies from './PopularMovies';
+import AccountPane from './AccountPane';
 
 const moviedb = new MovieDb(Buffer.from('ZDBmNWYyZTEzNTMzNjIwMDM2MmFmOGExYTczYWNiMTc=', 'base64').toString());
 
@@ -18,6 +20,7 @@ export default function Home() {
     <section className="Home">
       <div id="content">
         <h1>Home</h1>
+        <AccountPane />
         <Link to="/liked">Liked</Link>
         <PopularMovies />
       </div>

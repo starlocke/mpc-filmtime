@@ -1,0 +1,105 @@
+import { MovieDb } from 'moviedb-promise';
+import {
+  Button,
+  Col,
+  Modal,
+  ModalBody,
+  ModalDialog,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+} from 'react-bootstrap';
+import { AccountInfoResponse } from 'moviedb-promise/dist/request-types';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AuthenticationToken } from 'moviedb-promise/dist/types';
+
+export default function AccountPane() {
+  const [showModal, setShowModal] = useState(false);
+  const [session, setSession] = useState<string | undefined>(undefined);
+  const [account, setAccount] = useState<AccountInfoResponse | undefined>(
+    undefined
+  );
+  const [tokenUrl, setTokenUrl] = useState<string | undefined>(undefined);
+  const moviedb = useMemo(() => {
+    return new MovieDb(Buffer.from('ZDBmNWYyZTEzNTMzNjIwMDM2MmFmOGExYTczYWNiMTc=', 'base64').toString());
+  }, []);
+
+  const initToken = useCallback(() => {
+    moviedb
+      .requestToken()
+      .then((res: AuthenticationToken) => {
+        console.log('requestToken result');
+        console.log(res);
+        const url = `https://www.themoviedb.org/authenticate/${res.request_token}`;
+        window.open(url, '_blank');
+        setTokenUrl(url);
+        setShowModal(true);
+        return url;
+      })
+      .catch(console.error);
+  }, [moviedb]);
+
+  const initSession = useCallback(async () => {
+    await moviedb
+      .retrieveSession()
+      .then((sessionId: string) => {
+        setSession(sessionId);
+        console.log(`sessionId: ${sessionId}`);
+        return sessionId;
+      })
+      .catch(console.error);
+    moviedb
+      .accountInfo()
+      .then((res: AccountInfoResponse) => {
+        setAccount(res);
+        return res;
+      })
+      .catch(console.error);
+  }, [moviedb]);
+
+  if (!account) {
+    return (
+      <section className="AccountPane">
+        <Button onClick={initToken}>Login with TMDB</Button>
+        <Modal show={showModal}>
+          <ModalDialog>
+            <ModalHeader>
+              <ModalTitle>Auth</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <ol>
+                <li>
+                  Please
+                  <a href={tokenUrl} target="_blank" rel="noreferrer">
+                    authenticate
+                  </a>
+                  this app at TMDB with your web browser.
+                </li>
+                <li>
+                  Then, click <em>Continue</em>, below.
+                </li>
+              </ol>
+            </ModalBody>
+            <ModalFooter>
+              <Button onClick={() => initSession()}>Continue</Button>
+              <Button onClick={() => setShowModal(false)}>Cancel</Button>
+            </ModalFooter>
+          </ModalDialog>
+        </Modal>
+      </section>
+    );
+  }
+
+  return (
+    <section className="AccountPane">
+      {account.avatar?.gravatar?.hash && (
+        <img
+          src={`https://www.gravatar.com/avatar/${account.avatar?.gravatar?.hash}?s=42`}
+          className="rounded float-left"
+          alt="Avatar"
+        />
+      )}
+      {account.username}
+    </section>
+  );
+}
