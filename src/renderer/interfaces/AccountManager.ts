@@ -3,9 +3,9 @@ import { AccountInfoResponse } from 'moviedb-promise/dist/request-types';
 import { Dispatch, SetStateAction } from 'react';
 
 export default class AccountManager {
-  session?: string;
+  session: string | null;
 
-  setSession: Dispatch<SetStateAction<string | undefined>>;
+  setSession: Dispatch<SetStateAction<string | null>>;
 
   account?: AccountInfoResponse;
 
@@ -15,8 +15,8 @@ export default class AccountManager {
 
   constructor(
     moviedb: MovieDb,
-    session: string | undefined,
-    setSession: Dispatch<SetStateAction<string | undefined>>,
+    session: string | null,
+    setSession: Dispatch<SetStateAction<string | null>>,
     account: AccountInfoResponse | undefined,
     setAccount: Dispatch<SetStateAction<AccountInfoResponse | undefined>>
   ) {

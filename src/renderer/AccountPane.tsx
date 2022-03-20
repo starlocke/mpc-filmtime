@@ -1,6 +1,8 @@
+import { Link } from 'react-router-dom';
 import {
+  Badge,
   Button,
-  Col,
+  Image,
   Modal,
   ModalBody,
   ModalDialog,
@@ -9,13 +11,15 @@ import {
   ModalTitle,
 } from 'react-bootstrap';
 import { AccountInfoResponse } from 'moviedb-promise/dist/request-types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { AuthenticationToken } from 'moviedb-promise/dist/types';
 import AccountManager from './interfaces/AccountManager';
 
+import './AccountPane.css';
+
 export default function AccountPane(props: { accountMgr: AccountManager }) {
   const { accountMgr } = props;
-  const { moviedb, session, setSession, account, setAccount } = accountMgr;
+  const { moviedb, setSession, account, setAccount } = accountMgr;
   const [showModal, setShowModal] = useState(false);
   const [tokenUrl, setTokenUrl] = useState<string | undefined>(undefined);
 
@@ -40,6 +44,7 @@ export default function AccountPane(props: { accountMgr: AccountManager }) {
       .then((sessionId: string) => {
         setSession(sessionId);
         console.log(`sessionId: ${sessionId}`);
+        window.localStorage.setItem('sessionId', sessionId);
         return sessionId;
       })
       .catch(console.error);
@@ -87,14 +92,23 @@ export default function AccountPane(props: { accountMgr: AccountManager }) {
 
   return (
     <section className="AccountPane">
+      <Link to="/">
+        <Button>Popular Movies</Button>
+      </Link>
+      <Link to="/liked">
+        <Button>Favourite Movies</Button>
+      </Link>
+      <Button className="bg-warning border-warning text-secondary">
+        Logout
+      </Button>
       {account.avatar?.gravatar?.hash && (
-        <img
+        <Image
           src={`https://www.gravatar.com/avatar/${account.avatar?.gravatar?.hash}?s=42`}
           className="rounded float-left"
           alt="Avatar"
         />
       )}
-      {account.username}
+      <Badge bg="secondary">{account.username}</Badge>
     </section>
   );
 }

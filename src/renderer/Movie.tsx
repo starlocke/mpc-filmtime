@@ -1,7 +1,6 @@
 import {
   MovieAccountStateResponse,
   MovieResult,
-  PostResponse,
 } from 'moviedb-promise/dist/request-types';
 import { useCallback, useEffect, useState } from 'react';
 import { Button, Card, Col, Row } from 'react-bootstrap';

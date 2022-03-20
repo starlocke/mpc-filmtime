@@ -1,8 +1,7 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import { MovieDb } from 'moviedb-promise';
 import { AccountInfoResponse } from 'moviedb-promise/dist/request-types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AuthenticationToken } from 'moviedb-promise/dist/types';
+import { useMemo, useState } from 'react';
 import Home from './Home';
 import Liked from './Liked';
 import AccountManager from './interfaces/AccountManager';
@@ -10,14 +9,25 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function App() {
-  const [session, setSession] = useState<string | undefined>(undefined);
+  const storedSessionId = window.localStorage.getItem('sessionId');
+  const [session, setSession] = useState<string | null>(storedSessionId);
   const [account, setAccount] = useState<AccountInfoResponse | undefined>(
     undefined
   );
-  const [tokenUrl, setTokenUrl] = useState<string | undefined>(undefined);
   const moviedb = useMemo(() => {
-    return new MovieDb(Buffer.from('ZDBmNWYyZTEzNTMzNjIwMDM2MmFmOGExYTczYWNiMTc=', 'base64').toString());
-  }, []);
+    const mdb = new MovieDb(Buffer.from('ZDBmNWYyZTEzNTMzNjIwMDM2MmFmOGExYTczYWNiMTc=', 'base64').toString());
+    if (storedSessionId) {
+      mdb.sessionId = storedSessionId;
+      mdb
+        .accountInfo()
+        .then((res: AccountInfoResponse) => {
+          setAccount(res);
+          return res;
+        })
+        .catch(console.error);
+    }
+    return mdb;
+  }, [storedSessionId]);
 
   const accountMgr = useMemo(() => {
     return new AccountManager(

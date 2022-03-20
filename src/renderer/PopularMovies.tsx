@@ -1,10 +1,10 @@
-import { MovieDb } from 'moviedb-promise';
 import {
   PopularMoviesRequest,
   MovieResult,
   PopularMoviesResponse,
 } from 'moviedb-promise/dist/request-types';
 import { useCallback, useEffect, useState } from 'react';
+import AccountManager from './interfaces/AccountManager';
 import Movie from './Movie';
 
 export default function PopularMovies(props: { accountMgr: AccountManager }) {

@@ -22,3 +22,16 @@ body,
 #root > section > #content {
   margin: 1em;
 }
+
+.tmdb-link {
+  margin: 0.25em;
+}
+
+.tmdb-logo {
+  height: 1em;
+  vertical-align: baseline;
+}
+
+.TmdbCredits p {
+  margin: 1em;
+}
