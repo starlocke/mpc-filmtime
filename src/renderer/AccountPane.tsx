@@ -38,6 +38,8 @@ export default function AccountPane(props: { accountMgr: AccountManager }) {
       .catch(console.error);
   }, [moviedb]);
 
+  window.initToken = initToken;
+
   const initSession = useCallback(async () => {
     await moviedb
       .retrieveSession()
@@ -71,15 +73,15 @@ export default function AccountPane(props: { accountMgr: AccountManager }) {
         <Modal show={showModal}>
           <ModalDialog>
             <ModalHeader>
-              <ModalTitle>Auth</ModalTitle>
+              <ModalTitle>Login with TMDB</ModalTitle>
             </ModalHeader>
             <ModalBody>
               <ol>
                 <li>
-                  Please
+                  Please{' '}
                   <a href={tokenUrl} target="_blank" rel="noreferrer">
-                    authenticate
-                  </a>
+                    authenticate and approve
+                  </a>{' '}
                   this app at TMDB with your web browser.
                 </li>
                 <li>

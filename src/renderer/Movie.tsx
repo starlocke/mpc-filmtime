@@ -21,6 +21,7 @@ export default function Movie(props: {
   const handleHeartClick = useCallback(() => {
     if (!accountMgr.session) {
       // trigger sign-in
+      window.initToken();
       return;
     }
     if (accountMgr.account && accountMgr.account.id && movie.id) {
