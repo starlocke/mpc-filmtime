@@ -57,6 +57,13 @@ export default function AccountPane(props: { accountMgr: AccountManager }) {
       .catch(console.error);
   }, [moviedb, setAccount, setSession]);
 
+  const logout = () => {
+    moviedb.sessionId = '';
+    window.localStorage.removeItem('sessionId');
+    setSession(null);
+    setAccount(undefined);
+  };
+
   if (!account) {
     return (
       <section className="AccountPane">
@@ -98,7 +105,10 @@ export default function AccountPane(props: { accountMgr: AccountManager }) {
       <Link to="/liked">
         <Button>Favourite Movies</Button>
       </Link>
-      <Button className="bg-warning border-warning text-secondary">
+      <Button
+        onClick={logout}
+        className="bg-warning border-warning text-secondary"
+      >
         Logout
       </Button>
       {account.avatar?.gravatar?.hash && (
