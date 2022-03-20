@@ -1,9 +1,72 @@
-import { MovieResult } from 'moviedb-promise/dist/request-types';
-import { Card, Col, Row } from 'react-bootstrap';
+import {
+  MovieAccountStateResponse,
+  MovieResult,
+  PostResponse,
+} from 'moviedb-promise/dist/request-types';
+import { useCallback, useEffect, useState } from 'react';
+import { Button, Card, Col, Row } from 'react-bootstrap';
+import AccountManager from './interfaces/AccountManager';
 import './Movie.css';
 
-export default function Movie(props: { movie: MovieResult }) {
-  const { movie } = props;
+export default function Movie(props: {
+  movie: MovieResult;
+  accountMgr: AccountManager;
+}) {
+  const { movie, accountMgr } = props;
+  const { moviedb } = accountMgr;
+  const heartRed = '❤'; // red-filled-heart
+  const heartWhite = '🤍'; // white-outline-heart
+  const [liked, setLiked] = useState(false);
+  const [heart, setHeart] = useState(heartWhite);
+  const handleHeartClick = useCallback(() => {
+    if (!accountMgr.session) {
+      // trigger sign-in
+      return;
+    }
+    if (accountMgr.account && accountMgr.account.id && movie.id) {
+      const desiredFavoriteState = !liked;
+      // MEMO: I could not make use of "moviedb-promise" here.
+      //       There were errors in how it crafted the URL and payload.
+      //       It became necessary manually implement the API call.
+      const apiKey = Buffer.from('ZDBmNWYyZTEzNTMzNjIwMDM2MmFmOGExYTczYWNiMTc=', 'base64').toString();
+      const favUrl = `https://api.themoviedb.org/3/account/${accountMgr.account.id}/favorite?api_key=${apiKey}&session_id=${moviedb.sessionId}`;
+      const body = JSON.stringify({
+        media_type: 'movie',
+        media_id: movie.id,
+        favorite: desiredFavoriteState,
+      });
+      const opts = {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body,
+      };
+      fetch(favUrl, opts)
+        .then((res) => {
+          setHeart(desiredFavoriteState ? heartRed : heartWhite);
+          setLiked(desiredFavoriteState);
+          return res;
+        })
+        .catch(console.error);
+    }
+  }, [accountMgr.session, accountMgr.account, movie.id, moviedb, liked]);
+  useEffect(() => {
+    if (accountMgr.session) {
+      moviedb
+        .movieAccountStates({ id: `${movie.id}` })
+        .then((res: MovieAccountStateResponse) => {
+          if (res.favorite) {
+            setLiked(res.favorite);
+            setHeart(heartRed);
+          }
+          return res;
+        })
+        .catch(console.error);
+    }
+  }, [movie, moviedb, accountMgr, setLiked, setHeart]);
+
   return (
     <Card className="Movie">
       <Card.Img
@@ -12,10 +75,12 @@ export default function Movie(props: { movie: MovieResult }) {
       />
       <Card.Title>
         <Row>
-          <Col xs="1">
-            <span className="like">🤍</span>
+          <Col xs="2">
+            <Button className="like" onClick={handleHeartClick}>
+              {heart}
+            </Button>
           </Col>
-          <Col xs="11">
+          <Col xs="10">
             <span className="title">{movie.title}</span>
           </Col>
         </Row>

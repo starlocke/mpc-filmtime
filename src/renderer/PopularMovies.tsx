@@ -7,7 +7,9 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import Movie from './Movie';
 
-export default function PopularMovies() {
+export default function PopularMovies(props: { accountMgr: AccountManager }) {
+  const { accountMgr } = props;
+  const { moviedb } = accountMgr;
   const [isLoading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -15,7 +17,6 @@ export default function PopularMovies() {
 
   const load = useCallback(() => {
     setLoading(true);
-    const moviedb = new MovieDb(Buffer.from('ZDBmNWYyZTEzNTMzNjIwMDM2MmFmOGExYTczYWNiMTc=', 'base64').toString());
     const req: PopularMoviesRequest = { page };
     moviedb
       .moviePopular(req)
@@ -28,7 +29,7 @@ export default function PopularMovies() {
         return res;
       })
       .catch(console.error);
-  }, [page, setMovies, setTotalPages, setLoading]);
+  }, [page, setMovies, setTotalPages, setLoading, moviedb]);
   useEffect(() => {
     load();
   }, [load]);
@@ -62,7 +63,10 @@ export default function PopularMovies() {
   return (
     <div className="PopularMovies">
       {form}
-      {movies && movies.map((m: MovieResult) => <Movie key={m.id} movie={m} />)}
+      {movies &&
+        movies.map((m: MovieResult) => (
+          <Movie key={m.id} movie={m} accountMgr={accountMgr} />
+        ))}
     </div>
   );
 }

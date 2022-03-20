@@ -1,4 +1,3 @@
-import { MovieDb } from 'moviedb-promise';
 import {
   Button,
   Col,
@@ -12,17 +11,13 @@ import {
 import { AccountInfoResponse } from 'moviedb-promise/dist/request-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AuthenticationToken } from 'moviedb-promise/dist/types';
+import AccountManager from './interfaces/AccountManager';
 
-export default function AccountPane() {
+export default function AccountPane(props: { accountMgr: AccountManager }) {
+  const { accountMgr } = props;
+  const { moviedb, session, setSession, account, setAccount } = accountMgr;
   const [showModal, setShowModal] = useState(false);
-  const [session, setSession] = useState<string | undefined>(undefined);
-  const [account, setAccount] = useState<AccountInfoResponse | undefined>(
-    undefined
-  );
   const [tokenUrl, setTokenUrl] = useState<string | undefined>(undefined);
-  const moviedb = useMemo(() => {
-    return new MovieDb(Buffer.from('ZDBmNWYyZTEzNTMzNjIwMDM2MmFmOGExYTczYWNiMTc=', 'base64').toString());
-  }, []);
 
   const initToken = useCallback(() => {
     moviedb
@@ -55,7 +50,7 @@ export default function AccountPane() {
         return res;
       })
       .catch(console.error);
-  }, [moviedb]);
+  }, [moviedb, setAccount, setSession]);
 
   if (!account) {
     return (

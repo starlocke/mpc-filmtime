@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import './Liked.css';
 
-export default function Liked() {
+export default function Liked(props: { accountMgr: AccountManager }) {
+  const { accountMgr } = props;
   return (
     <section className="Liked">
       <div id="content">
