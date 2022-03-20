@@ -1,9 +1,8 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css';
-import './Home.css';
-import './Liked.css';
 import Home from './Home';
 import Liked from './Liked';
+import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function App() {
   return (

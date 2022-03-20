@@ -1,0 +1,8 @@
+.Movie.card {
+  display: inline-block;
+  margin: 1em;
+  width: 20em;
+}
+.Movie.card .card-title .row {
+  padding: 0.25em;
+}
