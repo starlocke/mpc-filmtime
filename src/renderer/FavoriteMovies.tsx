@@ -1,13 +1,12 @@
 import {
-  PopularMoviesRequest,
+  AccountMediaRequest,
   MovieResult,
-  PopularMoviesResponse,
 } from 'moviedb-promise/dist/request-types';
 import { useCallback, useEffect, useState } from 'react';
 import AccountManager from './interfaces/AccountManager';
 import Movie from './Movie';
 
-export default function PopularMovies(props: { accountMgr: AccountManager }) {
+export default function FavoriteMovies(props: { accountMgr: AccountManager }) {
   const { accountMgr } = props;
   const { moviedb } = accountMgr;
   const [isLoading, setLoading] = useState(true);
@@ -17,19 +16,22 @@ export default function PopularMovies(props: { accountMgr: AccountManager }) {
 
   const load = useCallback(() => {
     setLoading(true);
-    const req: PopularMoviesRequest = { page };
-    moviedb
-      .moviePopular(req)
-      .then((res: PopularMoviesResponse) => {
-        setMovies(res.results);
-        const total = parseInt(`${res.total_pages}`, 10);
-        setTotalPages(Math.max(0, Math.min(total, 500)));
-        setLoading(false);
-        console.log(res);
-        return res;
-      })
-      .catch(console.error);
-  }, [page, setMovies, setTotalPages, setLoading, moviedb]);
+    if (accountMgr.account) {
+      const { id } = accountMgr.account;
+      const req: AccountMediaRequest = { id: `${id}`, page };
+      moviedb
+        .accountFavoriteMovies(req)
+        .then((res) => {
+          setMovies(res.results);
+          const total = parseInt(`${res.total_pages}`, 10);
+          setTotalPages(Math.max(0, Math.min(total, 500)));
+          setLoading(false);
+          console.log(res);
+          return res;
+        })
+        .catch(console.error);
+    }
+  }, [accountMgr.account, page, moviedb]);
   useEffect(() => {
     load();
   }, [load]);
@@ -54,7 +56,7 @@ export default function PopularMovies(props: { accountMgr: AccountManager }) {
 
   if (isLoading) {
     return (
-      <div className="PopularMovies">
+      <div className="FavoriteMovies">
         {form}
         <div>Loading...</div>
       </div>
@@ -62,11 +64,11 @@ export default function PopularMovies(props: { accountMgr: AccountManager }) {
   }
 
   return (
-    <div className="PopularMovies">
+    <div className="FavoriteMovies">
       {form}
       {movies &&
         movies.map((m: MovieResult) => (
-          <Movie key={m.id} movie={m} accountMgr={accountMgr} />
+          <Movie key={m.id} movie={m} accountMgr={accountMgr} isFavorite />
         ))}
     </div>
   );

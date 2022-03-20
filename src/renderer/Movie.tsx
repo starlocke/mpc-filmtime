@@ -10,12 +10,13 @@ import './Movie.css';
 export default function Movie(props: {
   movie: MovieResult;
   accountMgr: AccountManager;
+  isFavorite?: boolean;
 }) {
-  const { movie, accountMgr } = props;
+  const { movie, accountMgr, isFavorite } = props;
   const { moviedb } = accountMgr;
   const heartRed = '❤'; // red-filled-heart
   const heartWhite = '🤍'; // white-outline-heart
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(isFavorite);
   const [heart, setHeart] = useState(heartWhite);
   const handleHeartClick = useCallback(() => {
     if (!accountMgr.session) {
@@ -52,7 +53,10 @@ export default function Movie(props: {
     }
   }, [accountMgr.session, accountMgr.account, movie.id, moviedb, liked]);
   useEffect(() => {
-    if (accountMgr.session) {
+    if (isFavorite) {
+      setLiked(true);
+      setHeart(heartRed);
+    } else if (accountMgr.session) {
       moviedb
         .movieAccountStates({ id: `${movie.id}` })
         .then((res: MovieAccountStateResponse) => {
@@ -64,7 +68,7 @@ export default function Movie(props: {
         })
         .catch(console.error);
     }
-  }, [movie, moviedb, accountMgr, setLiked, setHeart]);
+  }, [movie, moviedb, accountMgr, setLiked, setHeart, isFavorite]);
 
   return (
     <Card className="Movie">
@@ -87,3 +91,7 @@ export default function Movie(props: {
     </Card>
   );
 }
+
+Movie.defaultProps = {
+  isFavorite: false,
+};
