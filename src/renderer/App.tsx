@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import { MovieDb } from 'moviedb-promise';
 import { AccountInfoResponse } from 'moviedb-promise/dist/request-types';
@@ -15,7 +16,12 @@ export default function App() {
     undefined
   );
   const moviedb = useMemo(() => {
-    const mdb = new MovieDb(Buffer.from('ZDBmNWYyZTEzNTMzNjIwMDM2MmFmOGExYTczYWNiMTc=', 'base64').toString());
+    const mdb = new MovieDb(
+      Buffer.from(
+        'ZDBmNWYyZTEzNTMzNjIwMDM2MmFmOGExYTczYWNiMTc=',
+        'base64'
+      ).toString()
+    );
     if (storedSessionId) {
       mdb.sessionId = storedSessionId;
       mdb

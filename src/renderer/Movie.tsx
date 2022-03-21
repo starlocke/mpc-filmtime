@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import {
   MovieAccountStateResponse,
   MovieResult,
@@ -31,7 +32,10 @@ export default function Movie(props: {
       // MEMO: I could not make use of "moviedb-promise" here.
       //       There were errors in how it crafted the URL and payload.
       //       It became necessary manually implement the API call.
-      const apiKey = Buffer.from('ZDBmNWYyZTEzNTMzNjIwMDM2MmFmOGExYTczYWNiMTc=', 'base64').toString();
+      const apiKey = Buffer.from(
+        'ZDBmNWYyZTEzNTMzNjIwMDM2MmFmOGExYTczYWNiMTc=',
+        'base64'
+      ).toString();
       const favUrl = `https://api.themoviedb.org/3/account/${accountMgr.account.id}/favorite?api_key=${apiKey}&session_id=${moviedb.sessionId}`;
       const body = JSON.stringify({
         media_type: 'movie',
