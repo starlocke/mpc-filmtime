@@ -25,7 +25,6 @@ export default function PopularMovies(props: { accountMgr: AccountManager }) {
         const total = parseInt(`${res.total_pages}`, 10);
         setTotalPages(Math.max(0, Math.min(total, 500)));
         setLoading(false);
-        console.log(res);
         return res;
       })
       .catch(console.error);

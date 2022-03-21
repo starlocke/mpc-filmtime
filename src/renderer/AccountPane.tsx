@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Badge,
   Button,
@@ -22,13 +22,14 @@ export default function AccountPane(props: { accountMgr: AccountManager }) {
   const { moviedb, setSession, account, setAccount } = accountMgr;
   const [showModal, setShowModal] = useState(false);
   const [tokenUrl, setTokenUrl] = useState<string | undefined>(undefined);
+  const [continueMsg, setContinueMsg] = useState('Continue');
+  const [continueStyle, setContinueStyle] = useState('primary');
+  const navigate = useNavigate();
 
   const initToken = useCallback(() => {
     moviedb
       .requestToken()
       .then((res: AuthenticationToken) => {
-        console.log('requestToken result');
-        console.log(res);
         const url = `https://www.themoviedb.org/authenticate/${res.request_token}`;
         window.open(url, '_blank');
         setTokenUrl(url);
@@ -45,7 +46,6 @@ export default function AccountPane(props: { accountMgr: AccountManager }) {
       .retrieveSession()
       .then((sessionId: string) => {
         setSession(sessionId);
-        console.log(`sessionId: ${sessionId}`);
         window.localStorage.setItem('sessionId', sessionId);
         return sessionId;
       })
@@ -54,16 +54,26 @@ export default function AccountPane(props: { accountMgr: AccountManager }) {
       .accountInfo()
       .then((res: AccountInfoResponse) => {
         setAccount(res);
+        setShowModal(false);
         return res;
       })
-      .catch(console.error);
-  }, [moviedb, setAccount, setSession]);
+      .catch((err) => {
+        console.error(err);
+        setContinueMsg('Error. Try again.');
+        setContinueStyle('danger');
+        setTimeout(() => {
+          setContinueMsg('Continue');
+          setContinueStyle('primary');
+        }, 2500);
+      });
+  }, [moviedb, setAccount, setSession, setContinueMsg, setContinueStyle]);
 
   const logout = () => {
     moviedb.sessionId = '';
     window.localStorage.removeItem('sessionId');
     setSession(null);
     setAccount(undefined);
+    navigate('/');
   };
 
   if (!account) {
@@ -90,7 +100,9 @@ export default function AccountPane(props: { accountMgr: AccountManager }) {
               </ol>
             </ModalBody>
             <ModalFooter>
-              <Button onClick={() => initSession()}>Continue</Button>
+              <Button onClick={() => initSession()} variant={continueStyle}>
+                {continueMsg}
+              </Button>
               <Button onClick={() => setShowModal(false)}>Cancel</Button>
             </ModalFooter>
           </ModalDialog>

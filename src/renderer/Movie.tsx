@@ -21,10 +21,12 @@ export default function Movie(props: {
   const handleHeartClick = useCallback(() => {
     if (!accountMgr.session) {
       // trigger sign-in
+      window.onSessionFavMovieId = movie.id;
       window.initToken();
       return;
     }
     if (accountMgr.account && accountMgr.account.id && movie.id) {
+      window.onSessionFavMovieId = null;
       const desiredFavoriteState = !liked;
       // MEMO: I could not make use of "moviedb-promise" here.
       //       There were errors in how it crafted the URL and payload.
@@ -69,7 +71,22 @@ export default function Movie(props: {
         })
         .catch(console.error);
     }
-  }, [movie, moviedb, accountMgr, setLiked, setHeart, isFavorite]);
+    const { onSessionFavMovieId } = window;
+    if (onSessionFavMovieId && movie.id === onSessionFavMovieId) {
+      if (!liked) {
+        handleHeartClick();
+      }
+    }
+  }, [
+    movie,
+    moviedb,
+    accountMgr,
+    setLiked,
+    setHeart,
+    isFavorite,
+    liked,
+    handleHeartClick,
+  ]);
 
   return (
     <Card className="Movie">
