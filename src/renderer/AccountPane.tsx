@@ -24,22 +24,10 @@ export default function AccountPane(props: { accountMgr: AccountManager }) {
   const [tokenUrl, setTokenUrl] = useState<string | undefined>(undefined);
   const [continueMsg, setContinueMsg] = useState('Continue');
   const [continueStyle, setContinueStyle] = useState('primary');
+  const [autoContinue, setAutoContinue] = useState<
+    ReturnType<typeof setInterval> | undefined | null
+  >(undefined);
   const navigate = useNavigate();
-
-  const initToken = useCallback(() => {
-    moviedb
-      .requestToken()
-      .then((res: AuthenticationToken) => {
-        const url = `https://www.themoviedb.org/authenticate/${res.request_token}`;
-        window.open(url, '_blank');
-        setTokenUrl(url);
-        setShowModal(true);
-        return url;
-      })
-      .catch(console.error);
-  }, [moviedb]);
-
-  window.initToken = initToken;
 
   const initSession = useCallback(async () => {
     await moviedb
@@ -55,6 +43,9 @@ export default function AccountPane(props: { accountMgr: AccountManager }) {
       .then((res: AccountInfoResponse) => {
         setAccount(res);
         setShowModal(false);
+        if (autoContinue) {
+          setAutoContinue(null);
+        }
         return res;
       })
       .catch((err) => {
@@ -66,7 +57,24 @@ export default function AccountPane(props: { accountMgr: AccountManager }) {
           setContinueStyle('primary');
         }, 2500);
       });
-  }, [moviedb, setAccount, setSession, setContinueMsg, setContinueStyle]);
+  }, [moviedb, setSession, setAccount, autoContinue]);
+
+  const initToken = useCallback(() => {
+    moviedb
+      .requestToken()
+      .then((res: AuthenticationToken) => {
+        const url = `https://www.themoviedb.org/authenticate/${res.request_token}`;
+        window.open(url, '_blank');
+        setTokenUrl(url);
+        setShowModal(true);
+        const intervalId = setInterval(initSession, 2500);
+        setAutoContinue(intervalId);
+        return url;
+      })
+      .catch(console.error);
+  }, [initSession, moviedb]);
+
+  window.initToken = initToken;
 
   const logout = () => {
     moviedb.sessionId = '';
